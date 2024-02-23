@@ -3,6 +3,7 @@ const storefrontAccessToken =
   process.env.NEXT_PUBLIC_SHOPIFY_STORE_FRONT_ACCESS_TOKEN;
 const collection = process.env.NEXT_PUBLIC_SHOPIFY_COLLECTION;
 
+import { graphql } from "gql.tada";
 import { createStorefrontApiClient } from "@shopify/storefront-api-client";
 interface ShopifyResponse<T> {
   data: T;
@@ -22,7 +23,7 @@ const client = createStorefrontApiClient({
 });
 
 export async function getAllProductsInCollection() {
-  const query = `{
+  const query = graphql(`{
       collectionByHandle(handle: "${collection}") {
         id
         title
@@ -60,9 +61,9 @@ export async function getAllProductsInCollection() {
           }
         }
       }
-    }`;
+    }`);
   const { data, errors, extensions } = await client.request(query);
-
+  console.log(data);
   return data.collectionByHandle.products.edges
     ? data.collectionByHandle.products.edges
     : [];
